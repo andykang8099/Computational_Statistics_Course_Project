@@ -1,0 +1,798 @@
+---
+title: "STAT471_Project"
+author: "Group7:Yuzhuo Kang"
+date: "4/25/2020"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+### a. Abstract:
+
+This project is the application and visualization of bootstraps with simulation. Bootstraps method belongs to nonparametric Monte Carlo methods, which is used to estimate the distribution of the population data by simulating and resampling. This project will use four different data sets and two bootstrap methods to visualize the bootstrap simulation by Shinyapp. For the bootstrap on discrete, continuous, and data with unknown distribution, when the simulation time increases, the bootstrap method gives a more precise estimation on the population data.For the residual bootstrap, when the simulation time increases, the distribution of the impact of all the predictors is close to the normal distribution.
+
+
+### b. Introduction:
+
+This project will conduct a bootstrap analysis of different kinds of data. In order to show proximity and accuracy of estimation, this project will adopt visualization methods such as histogram and density plots via Shinyapp to show relevant statistical parameters of bootstrap samples. The motivation is that after learning bootstrap in class, our group finds that it might be a little bit difficult for someone learning bootstrap to understand it with only theoretical formulas and numerical results truly.  Based on this consideration, this project aims to show applications and visualization results on the real data for the learners of simulation studies to help audiences better understand its properties and strength. 
+
+This program’s objective is to provide an intuitive representation of bootstrap results. Various types of visualizations, such as Shinyapp, are adapted in order to show the relationship between the bootstrap results and the results from actual data directly to audiences. The goal is to show whether the estimation results from bootstrap results have proximity to the actual value when the data have different distributions and show how the distribution of estimator changes when the total simulation time changes or the asample 
+
+This project includes diverse types of diagrams to show how the bootstraps sampling method creates a confidence interval about the population from samples. We expect to show that bootstrap is a reliable way to approximate the population by showing the bootstrap estimated confidence intervals. The expected outcome is that the estimation results from bootstrap will close to the real value when the sample size and simulation time increases. 
+
+For the methods, this project will use nonparametric bootstrap methods to treat subgroups of population data as finite observed samples. The selected sample will be made inference to estimate the characteristics, distribution, and other parameters of the whole population. The type of estimators include mean and variance. This project uses resampling methods to compare the mean, variance, and confidence intervals of the data with the true theoretical value. It will also use a comprehensive calculation to show the standard error and estimated bias. To make the bootstrap analysis more comprehensive and conclusive, the data type of populations includes both discrete variables, continuous variables, variables with unknown distribution. The goal is to see whether these three types of variables show similar results. This project will also conduct residual bootstrap using life expectancy data. The goal is to compare the estimated impacts of three factors using residual bootstrap and a linear regression model. Using the ShinyApp, it shows how the distribution of predictor varies when the simulation time increases. We hypothesis that the bootstrap with more simulation is better. The estimator is more accurate. 
+		
+
+### c. Statistical Analysis
+
+#### Bootstrap on data following poisson distribution 
+**This part tends to use Bootrap Method to estimate parameters for discrete population, and for this example, a 2-dimension Poisson distribution.**  
+The data is from a 2-dimension Poisson distribution simulated by code. And then we can use bootstrap method to estimate its mean and variance. By theoretical calculation, we know:
+$p(k;\lambda)=e^{-\lambda}\frac{\lambda^k}{ k!}$  
+$EX=\sum_{n=0}^\infty nP(X=n)=e^{-\lambda}\sum_{n=0}^\infty\frac{n\lambda^n}{ n!}=e^{-\lambda}\sum_{n=0}^\infty\frac{\lambda^n}{ (n-1)!}=\lambda e^{-\lambda}\sum_{n=0}^\infty\frac{\lambda^n}{ n!}=\lambda$  
+$EX^2=\sum_{n=0}^\infty n^2P(X=n)=\sum_{n=1}^\infty\frac{n^2e^{-\lambda}\lambda^n}{ n!}=e^{-\lambda}\sum_{n=2}^\infty\frac{n(n-1)\lambda^n}{ n!}+e^{-\lambda}\sum_{n=1}^\infty\frac{n\lambda^n}{ n!}=\lambda^2 e^{-\lambda}\sum_{n=2}^\infty\frac{\lambda^{n-2}}{ (n-2)!}+\lambda=\lambda^2+\lambda$  
+$Var(X)=EX^2-(EX)^2=\lambda^2+\lambda-\lambda^2=\lambda$  
+So if bootstrap method can give a right estimation, mean and variance should all be approximately $\lambda$.
+
+<img src="tplot1.png"width="350"/>
+
+From this plot we can see the most density dot is (3,3). However, since data from Poisson distribution are all integers, this plot does not reflect the random situation very well.
+
+<img src="tplot2.png"width="350"/>
+
+According to the graph, we can see the data assemble around 3. According to all the 95% confidence intervals, we can see 3 right in them. So Bootstrap Method gives a quite precise estimation of corresponding statistics of Poisson distribution.
+
+#### Bootstrap on data following continuous distribution
+
+This part use the normal distribution
+*We first evaluate how sample size n affects the boostrap method*
+We simulate a random sample of size of size n=10,100,1000 from a standard normal distribution: μ=0, σ^2=1 when the simulation time=1000. 
+
+The following plots are for n=10, 100, 1000
+
+<img src="hplot1.png"width="400"/>
+<img src="hplot2.png" width="400"/>
+<img src="hplot3.png" width="400"/>
+
+
+**We observe that, as the sampling size increase:**
+**1.the estimated variance becomes closer and closer to the population variance**
+**2.the distribution histogram changeas from a right-skewed one to a bell-shaped one. Note the reason it is right-skewed is because our data. estimated sample variance, can't be smaller than 0**
+**3.the length all types of confidence interval shrink; the changes is dramatic at first, then tends to stablize**
+
+We then evaluate how simulation times affect the bootsrap method*
+We simulate a random sample of size n=100 from a standard normal distribution: μ=0, σ^2=1
+simulation times=20,200,1000
+
+The following plots are for simulation times=20,200,1000
+
+<img src="hplot4.png"width="400"/>
+<img src="hplot5.png" width="400"/>
+<img src="hplot6.png" width="400"/>
+
+
+**We observe that, as the bootstrap simualtion time increase:**
+**The distribution histogram tends to become more normally distributed. Therefore, this verifies what we studied in class, and we suggect using large boostrp times**
+
+
+
+#### Bootstrap on faithful data (unknown distribution)
+**This part tends to find out the relationship between simulation times and the corresponding bootstrap confidence interval.**  
+The data we use is the 'Old Faithful Geyser Data' which is stored in R already. The data,with 272 observations, tells the waiting time between eruptions for the Old Faithful geyser in Yellowstone National Park, Wyoming, USA.  
+The following is the example focusing on the mean and standard variance value of the bootstraped data.  
+We made a little application to visualize how the statistics(mean and standard variance) change when simulation time changes.  
+After trying different simulation times, we came to the conclusion that when simulation times are small, the confidence intervals are unstable -- they change dramaticly when simulation time grows. On the contray, the confidence intervals become stable when simulation times are large.  
+For example, when simulation times changes from 200 to 202, we have:
+    
+<img src="200.png"width="300"/>
+<img src="201.png" width="300"/>
+<img src="202.png" width="300"/>
+
+When simulation times changes from 8000 to 8002, we have:
+
+<img src="8000.png"width="300"/>
+<img src="8001.png" width="300"/>
+<img src="8002.png" width="300"/>
+
+Hence, if we want to get a more precise result, we may better choose simulation times as much as possible，as shown in the shiny app
+
+<img src="xu1.png"width="500"/>
+
+
+
+
+
+
+#### Residual bootstrap on life expectancy data
+This part shows the visualization of the residual bootstrap.The aim of this part of the project is to do the data analysis with residual bootstrap on the life expentacy data from WHO. 
+
+The dataset is the Life Expectancy Data, which is collected from WHO and United Nations website. The data contains the health status data for all the countires in 2014. The selected factors include resident health expeditures, government total health expenditure, and alcohol consumption. The response variable is the average life expectancy in age. In the data, the health expediture measures the expenditure on health as a percentage of Gross Domestic Product per capita(%). The alcohol consumption records per capita consumption (in litres of pure alcohol) for individuals who are older than 15. The government health expenditure measures the general government expenditure on health as a percentage of total government expenditure (%).
+
+The model is defined as follows:
+
+$Life=\beta_0+\beta_1Achohol+\beta_2Health+\beta_3Government+\epsilon$
+The Achohol is the alcohol consumption. Health represents the proportion of total health expenditure as total GDP. The government is the total proportion of government health expenditure. $\beta$ is estimated impacts of three factors. The error term is assumed to be normally distributed with mean 0.
+
+First conduct a classic analysis on this MLR model. The average value of life expectancy,alcohol consumption,health expenditure, total government health expenditure is 71.71, 3.308,1018.36,6.22. From the following correlation matrix plot, it shows that the the life expectancy and alcohol consumption, health expenditure by GDP, and total government health expenditure are highly correlated. This plot shows the density plot of the four variables. It shows that the life expectancy and total government health expenditure is close to normal distribution, and the distribution of alcohol consumption and health expenditure are highly skewed. 
+
+<img src="plotkang1.png"width="400"/>
+
+The linear regression model shows that the R squared value is 0.3398. The estimated impacts of alcohol consumption, health expenditure by GDP, and total government health expenditure are 0.7965, 0.000754, and 0.0436. Alcohol consumption, total health expenditure as a percentage as GDP, government health expenditures have significant impacts of the life expectancy. Use the estimated coefficients and residual standard error from the regression model to simulate at the observed value of each covariate. The residual standard error is 6.932. The confidence intervals for the three factors using linear regression model are (0.52,1.07),(0.00032,0.0012),(0.042,0.83).
+
+Next step is to simulate on the life expectancy data. In the simulation matrix, for each column, the response vector of the life expectancy is simulated. It contains the predicted values. The total number of column is same as the total number of simulations, 1000. The total row number is the total observation of the life expectancy data, 180. In addtion, a matrix of simulated residuals is also generated by the random variables $\epsilon$, which is assumed to be normally distributed with mean 0 and variance 6.932. The simulation on the coefficient of three factors is shown in the following graphs. The simulated coefficients of alcohol, health expenditure by GDP, and total government health expenditure are 0.80014, 0.0007531, 0.4365329, which are close to the estimated value in the regression model. Also, the figure shows that the distribution of the simulated coefficients are close to normal distribution.
+
+The plots of the simulation on the impacts of these three factors:
+
+
+<img src="plotkang2.png"width="400"/>
+<img src="plotkang3.png" width="400"/>
+<img src="plotkang4.png" width="400"/>
+
+
+Then the residual bootstrap is conducted on this multiple linear regression model because of the possible linear correlation between the covariate. Compared to other bootstrap methods, it resamples the error term. Also, it is more stable and handle the problem of tie points in the data, and it is more stable because it does not change the matrix design. It conducts bootstrap on the residuals. The bootstrap value of life expectancy is calculated by the predicted life expectancy and residuals. Then the estimated impacts of three factors is calculated by matrix multiplication. The result of bootstrap estimation shows that the bias of three coefficients is very small, which is all close to 0. The standard error of three effects are 0.142, 0.00022,and 0.1933 when the simulation time is 1000. The estimated impacts of three factors are 0.7958,0.000756,and 0.4311. These values are closer to the OLS estimators.
+
+The 95 % bias corrected bootstrap basic confidence interval of the impact of the alcohol,health expenditures by GDP, and governmental health Expenditure is (0.522, 1.091), (0.000318,0.00116),(0.0728,0.8275). The bootstrap percentile confidence intervals are (0.5035,1.07),(0.00034,0.0011),(0.055,0.81). The bootstrap confidence interval using standard normal approximations are (0.518, 1.076),(-0.000325,0.00118),(0.063, 0.82). It shows that the percentile confidence interval and basic confidence interval is better because they are shorter.
+
+Next, use the shiny app to show how the estimator on the life expentancy changes when the total simulation changes. The shiny app includes the total simulation times, the bootstrap histogram, the bootstrap density curve, and 95% confidence interval using standard normal approximation. 
+
+It is shown in the following plots when the simulation time is 100.
+
+<img src="plotkang5.png"width="700"/>
+
+We could also compare the distribution of estimators when the simulation time differs. It shows that when the simulation time rises from 100 to 1000, the distribution of the estimators of three factors are close to normal distibution, and the estiamted result is better.
+
+<img src="plotkang6.png" width="400"/>
+<img src="plotkang7.png" width="400"/>
+<img src="plotkang8.png" width="400"/>
+
+
+
+### d. Conclusion and discussion 
+
+
+For the bootstrap on the data with discrete, continuous, and unknown distribution, our project finds that when the total simulation time increases, the estimator using bootstrap is closer to the observed value of the estimator using population data. It has a more accurate estimation on the population data. The distribution of the bootstrap estimator is closer to the distribution of population data as the total simulation time increases. The curve evolves from skewed distribution to bell-shaped in the continuous and unknown data distribution
+
+For the residual bootstrap on the WHO health data, when the total simulation time is 1000, the bootstrap estimated impacts of alcohol consumption, health expenditures by GDP, governmental health Expenditure are  0.7958,0.000756,and 0.4311. which are all very close to the coefficients in the linear regression model, and the bias is very close to 0. The visulization using shiny app shows that when the simulation time is small, the distribution of estimated impacts of three factors are skewed to one side or distributed unevenly. When the simulation time increases, the distribution of estimated impacts of three factors is close to normal distribution.
+
+The advantage of our project is that it does extensive simulation on different types of data.
+it also uses shiny app with histograms to show the distribution of estimator at different  values of simulation. The limitation parts that we can further improve include trying simulations on more types of distribution to get a general conclusion, such as the gamma 
+and uniform distribution, and plots could be further improved by adding text and number. Also, in the residual bootstrap, we could try use PCA to make our results more accurate.
+
+
+
+
+
+### e.Bibliography
+
+Mario L. Rizzo, Statistical computing with R, Computer Science and Data Analysis Series
+
+
+### f.Appendix: The compelete R code
+
+### Code for data following discrete distribution
+```{r,fig.show='hide'}
+set.seed(123)
+library(bootstrap)
+x=rpois(1000,3) #data
+y=rpois(1000,3)
+mydata=rbind(x,y)
+library(IDPmisc)
+iplot(t(mydata),xlab ="x",ylab = "y")
+#From this plot we can see the most density dot is (3,3). However, since data from Poisson distribution are all integers, this plot does not reflect the random situation very well.
+
+m.obs=apply(mydata,1,mean)# observed mean
+v.obs=apply(mydata,1,var)#observed variance
+B=1000
+mboot=matrix(rep(0,2000),nrow=2)
+vboot=matrix(rep(0,2000),nrow=2)
+for(i in 1:B){ 
+  z=sample(1:1000,size=1000,replace=TRUE)#sample the columns with replacement
+  newsam<-mydata[,z]#reordered data
+  mboot[,i]=apply(newsam,1,mean)#new mean
+  vboot[,i]=apply(newsam,1,var)#new variance
+}
+
+#install.packages("IDPmisc")
+
+iplot(t(mboot),xlab ="x",ylab = "y")
+iplot(t(vboot),xlab ="x",ylab = "y")
+
+se.boot=apply(mboot,1,sd)#standard deviacian
+m.c=2*m.obs-apply(mboot,1,mean)#bias correction
+(rbind(m.c-se.boot*1.96,m.c+se.boot*1.96))#Standard normal approximated CI
+
+(c(2*m.obs[1]-quantile(mboot[1,],0.975),2*m.obs[1]-quantile(mboot[1,],0.025)))
+(c(2*m.obs[2]-quantile(mboot[2,],0.975),2*m.obs[2]-quantile(mboot[2,],0.025)))
+#The basic interval
+
+(c(quantile(mboot[1,],0.025),quantile(mboot[1,],0.975)))
+(c(quantile(mboot[2,],0.025),quantile(mboot[2,],0.975)))
+#The Percentile interval
+
+
+se.boot=apply(vboot,1,sd)#standard deviacian
+v.c=2*v.obs-apply(vboot,1,mean)#bias correction
+(rbind(v.c-se.boot*1.96,v.c+se.boot*1.96))#Standard normal approximated CI
+
+(c(2*v.obs[1]-quantile(vboot[1,],0.975),2*v.obs[1]-quantile(vboot[1,],0.025)))
+(c(2*v.obs[2]-quantile(vboot[2,],0.975),2*v.obs[2]-quantile(vboot[2,],0.025)))
+#The basic interval
+
+(c(quantile(vboot[1,],0.025),quantile(vboot[1,],0.975)))
+(c(quantile(vboot[2,],0.025),quantile(vboot[2,],0.975)))
+#The Percentile interval
+
+```
+
+
+### Residual bootstrap on regression data(WHO data)
+```{r,fig.show='hide'}
+suppressMessages(library(dplyr))
+suppressMessages(library(PerformanceAnalytics))
+suppressMessages(library(kableExtra))
+# Read the data
+data=read.csv("Life Expectancy Data.csv")
+# Select the desired variables
+data1=data%>% filter(Year==2014)%>%select(Life.expectancy,Alcohol,percentage.expenditure,Total.expenditure)
+# Delete the observations which have missing values
+data1= na.omit(data1) 
+# Show the structure
+str(data1)
+#summarize all the variables
+summary(data1)
+# Show the correlation between variables 
+chart.Correlation(data1,col="dodgerblue3")
+
+mod = lm(Life.expectancy~Alcohol+percentage.expenditure+Total.expenditure,data=data1)
+summary(mod)
+
+# Build the confidence interval for each variables
+confint(mod, level=.95)
+#estimated coefficients
+(beta = mod$coef)
+# Build a design matrix of predictor
+X = as.matrix(cbind(rep(1,nrow(data1)),data1[,2:4]))
+# Calculate the predicted value from the model
+pred = X%*%beta 
+sigma = summary(mod)$sigma
+sigma
+
+# Do the simulation on the data
+set.seed(2020)
+# number of simulations
+nsim = 1000 
+nobs = dim(data1)[1]   
+Ysim = matrix(data=pred,nrow=nobs,ncol=nsim,byrow=FALSE) +
+          matrix(data=rnorm(nobs*nsim,mean=0,sd=sigma),nrow=nobs,ncol=nsim,byrow=FALSE)
+
+# Simulate on the impacts of threee factors
+beta.sim = solve( t(X)%*%X, t(X)%*%Ysim,na.rm=TRUE )
+beta.simT<-t(beta.sim)
+#Alchohol
+hist(beta.simT[,2],breaks=60,freq=FALSE,col="red",xlab = "Alcohol(beta1)",main="Histogram of the simulated coefficient of alchohol")
+abline(v=c(mean(beta.simT[,2])), lwd=3,lty=3,col="blue")
+# Expenditures by GDP
+hist(beta.simT[,3],breaks=60,freq=FALSE,col="purple",xlab = "Expenditures(%GDP)(beta2)",main="Histogram of the simulated coefficient of health expenditure")
+abline(v=c(mean(beta.simT[,3])), lwd=3,lty=3,col="blue")
+# Government Expenditures by GDP
+hist(beta.simT[,4],breaks=60,freq=FALSE,col="yellow",xlab = "Expenditures(%Government)(beta2)",main="Histogram of the simulated coefficient of government expenditure")
+abline(v=c(mean(beta.simT[,4])), lwd=3,lty=3,col="blue")
+
+c(mean(beta.simT[,2]),mean(beta.simT[,3]),mean(beta.simT[,4]))
+
+
+# residual bootstrap
+res.data1 = data1$Life.expectancy - pred
+
+res.boot = res.data1[sample(x=1:nobs,size=nsim*nobs,replace=TRUE)]
+res.boot = matrix(data=res.boot,nrow=nobs,ncol=nsim,byrow=FALSE)
+Y.boot = matrix(data=pred,nrow=nobs,ncol=nsim,byrow=FALSE) + res.boot
+
+beta.boot = solve( t(X)%*%X, t(X)%*%Y.boot)
+# estimated impacts using the bootstrap estimation 
+apply(X=beta.boot,MARGIN=1,FUN=mean)
+# Bias
+(biases = apply(X=beta.boot,MARGIN=1,FUN=mean) - beta)
+#se
+se.boot = apply(X=beta.boot,MARGIN=1,FUN=sd)
+se.boot
+# bias corrected estimator
+beta.c = beta-biases
+beta.c
+
+# Lower and Upper Bounds
+betaq.low = apply(beta.boot,1,quantile,0.025)
+betaq.up = apply(beta.boot,1,quantile,0.975)
+
+# The 95% basic Confidence Interval
+cbind(2*beta.c - betaq.up, 2*beta.c-betaq.low)
+# 95% quantile CI
+qci1=c(betaq.low[2],betaq.up[2])
+qci2=c(betaq.low[3],betaq.up[3])
+qci3=c(betaq.low[4],betaq.up[4])
+
+# 95% CI with standard normal approximation
+snci1=beta.c[2] + c(-1,1)*qnorm(0.975)*se.boot[2]
+snci2=beta.c[3] + c(-1,1)*qnorm(0.975)*se.boot[3]
+snci3=beta.c[4] + c(-1,1)*qnorm(0.975)*se.boot[4]
+
+
+# Do the distribution of bootstrap estimator when n=1000
+nsim=1000
+u=rep(0,nsim)
+for(i in 1:nsim){
+          res.boot = res.data1[sample(x=1:nobs,size=nsim*nobs,replace=TRUE)]
+          res.boot = matrix(data=res.boot,nrow=nobs,ncol=nsim,byrow=FALSE)
+          Y.boot = matrix(data=pred,nrow=nobs,ncol=nsim,byrow=FALSE) + res.boot
+          beta.boot = solve( t(X)%*%X, t(X)%*%Y.boot)
+            u[i]=mean(beta.boot[3,])
+        }
+        hist(u,breaks=50,freq=F,col="blue",border=NA,xlab='Health Expenditure by GDP',main="Estimated coefficients of health expenditures")
+        lines(density(u),col='lightgreen',lwd=2)
+        obs=mod$coef[3]
+        boot=u
+        se=sd(boot)
+        bias=mean(boot)-obs
+        obs.corrected=obs-bias
+        CI=obs.corrected+c(-1,1)*qnorm(0.975)*se
+        abline(v=CI[1],col='deepskyblue',lty=2,lwd=2)
+        abline(v=CI[2],col='deepskyblue',lty=2,lwd=2)
+        legend('topright',lty=c(1,1,2),col=c('blue','lightgreen','deepskyblue'),legend=c('Bootstrap Histogram','Bootstrap Density Curve','95% Bias corrected CI'),cex=0.75,lwd=c(10,2,2))
+        
+#Alcohol    
+u=rep(0,nsim)
+        for(i in 1:nsim){
+          res.boot = res.data1[sample(x=1:nobs,size=nsim*nobs,replace=TRUE)]
+          res.boot = matrix(data=res.boot,nrow=nobs,ncol=nsim,byrow=FALSE)
+          Y.boot = matrix(data=pred,nrow=nobs,ncol=nsim,byrow=FALSE) + res.boot
+          beta.boot = solve( t(X)%*%X, t(X)%*%Y.boot)
+            u[i]=mean(beta.boot[2,])
+        }
+        hist(u,breaks=50,freq=F,col="khaki",border=NA,xlab='Alcohol',main="Estimated coefficients of alchhol")
+        lines(density(u),col='lightgreen',lwd=2)
+        obs=mod$coef[2]
+        boot=u
+        se=sd(boot)
+        bias=mean(boot)-obs
+        obs.corrected=obs-bias
+        CI=obs.corrected+c(-1,1)*qnorm(0.975)*se
+        abline(v=CI[1],col='deepskyblue',lty=2,lwd=2)
+        abline(v=CI[2],col='deepskyblue',lty=2,lwd=2)
+        legend('topright',lty=c(1,1,2),col=c('khaki','lightgreen','deepskyblue'),legend=c('Bootstrap Histogram','Bootstrap Density Curve','95% Bias corrected CI'),cex=0.75,lwd=c(10,2,2))
+# Gov estimation
+     u=rep(0,nsim)
+        for(i in 1:nsim){
+          res.boot = res.data1[sample(x=1:nobs,size=nsim*nobs,replace=TRUE)]
+          res.boot = matrix(data=res.boot,nrow=nobs,ncol=nsim,byrow=FALSE)
+          Y.boot = matrix(data=pred,nrow=nobs,ncol=nsim,byrow=FALSE) + res.boot
+          beta.boot = solve( t(X)%*%X, t(X)%*%Y.boot)
+            u[i]=mean(beta.boot[4,])
+        }
+        hist(u,breaks=50,freq=F,col="purple",border=NA,xlab='Government Health Expenditures',main="Estimated coefficients of government expenditures")
+        lines(density(u),col='lightgreen',lwd=2)
+        obs=mod$coef[4]
+        boot=u
+        se=sd(boot)
+        bias=mean(boot)-obs
+        obs.corrected=obs-bias
+        CI=obs.corrected+c(-1,1)*qnorm(0.975)*se
+        abline(v=CI[1],col='deepskyblue',lty=2,lwd=2)
+        abline(v=CI[2],col='deepskyblue',lty=2,lwd=2)
+        legend('topright',lty=c(1,1,2),col=c('purple','lightgreen','deepskyblue'),legend=c('Bootstrap Histogram','Bootstrap Density Curve','95% Bias corrected CI'),cex=0.75,lwd=c(10,2,2))
+```
+
+#### Code for shiny app on unknown data
+```{r}
+library(shiny)
+ui=fluidPage(
+    titlePanel("Bootstrap for faithful data"),
+    sidebarLayout(
+        sidebarPanel(
+            sliderInput("nsim",
+                        "Times of bootstraps:",
+                        min=10,
+                        max=10000,
+                        value=4000)
+        ),
+        mainPanel(
+           plotOutput("distPlot")
+        )
+    )
+)
+server=function(input, output) {
+    output$distPlot=renderPlot({
+        x=faithful[,2]
+        nsim=input$nsim
+        u=rep(0,nsim)
+        v=rep(0,nsim)
+        for(i in 1:nsim){
+            temp=sample(x,size=length(x),replace=TRUE)
+            u[i]=mean(temp)
+            v[i]=sd(temp)
+        }
+        par(mfrow=c(2,1))
+        hist(u,breaks=50,freq=F,col="khaki",border=NA,xlim=c(68,74),xlab='Waiting Time (min)',main=paste(sep='','Mean Value (Simulation Time = ',nsim,')'))
+        lines(density(u),col='lightgreen',lwd=2)
+        obs=mean(x)
+        boot=u
+        se=sd(boot)
+        bias=mean(boot)-obs
+        obs.corrected=obs-bias
+        CI=obs.corrected+c(-1,1)*qnorm(0.975)*se
+        abline(v=CI[1],col='deepskyblue',lty=2,lwd=2)
+        abline(v=CI[2],col='deepskyblue',lty=2,lwd=2)
+        legend('topright',lty=c(1,1,2),col=c('khaki','lightgreen','deepskyblue'),legend=c('Bootstrap Histogram','Bootstrap Density Curve','95% Bias corrected CI'),cex=0.75,lwd=c(10,2,2))
+        
+        hist(v,breaks=50,freq=F,col="khaki",border=NA,xlim=c(12,15),xlab='Waiting Time (min)',main=paste(sep='','SD Value (Simulation Time = ',nsim,')'))
+        lines(density(v),col='lightgreen',lwd=2)
+        obs=sd(x)
+        boot=v
+        se=sd(boot)
+        bias=mean(boot)-obs
+        obs.corrected=obs-bias
+        CI=obs.corrected+c(-1,1)*qnorm(0.975)*se
+        abline(v=CI[1],col='deepskyblue',lty=2,lwd=2)
+        abline(v=CI[2],col='deepskyblue',lty=2,lwd=2)
+        legend('topright',lty=c(1,1,2),col=c('khaki','lightgreen','deepskyblue'),legend=c('Bootstrap Histogram','Bootstrap Density Curve','95% Bias corrected CI'),cex=0.75,lwd=c(10,2,2))
+    },height = 800, width = 700 )
+}
+#shinyApp(ui=ui,server=server)
+```
+
+
+
+##### Code for shiny app on the estiamted impacts
+```{r,fig.show='hide',message=FALSE,warning=FALSE,result='hide'}
+library(shiny)
+ui=fluidPage(
+    titlePanel("Bootstrap for the estimators on the life expentancy"),
+    sidebarLayout(
+        sidebarPanel(
+            sliderInput("nsim",
+                        "Times of bootstraps:",
+                        min=10,
+                        max=1000,
+                        value=100)
+        ),
+        mainPanel(
+           plotOutput("dist1Plot",height="300px"),
+           plotOutput("dist2Plot",height="300px"),
+           plotOutput("dist3Plot",height="300px"),
+        )
+    )
+)
+
+server=function(input, output) {
+    output$dist1Plot=renderPlot({
+        nsim=input$nsim
+        u=rep(0,nsim)
+        for(i in 1:nsim){
+          res.boot = res.data1[sample(x=1:nobs,size=nsim*nobs,replace=TRUE)]
+          res.boot = matrix(data=res.boot,nrow=nobs,ncol=nsim,byrow=FALSE)
+          Y.boot = matrix(data=pred,nrow=nobs,ncol=nsim,byrow=FALSE) + res.boot
+          beta.boot = solve( t(X)%*%X, t(X)%*%Y.boot)
+            u[i]=mean(beta.boot[2,])
+        }
+        hist(u,breaks=50,freq=F,col="khaki",border=NA,xlab='Alcohol',main="Estimated coefficients using bootstrap")
+        lines(density(u),col='lightgreen',lwd=2)
+        obs=mod$coef[2]
+        boot=u
+        se=sd(boot)
+        bias=mean(boot)-obs
+        obs.corrected=obs-bias
+        CI=obs.corrected+c(-1,1)*qnorm(0.975)*se
+        abline(v=CI[1],col='deepskyblue',lty=2,lwd=2)
+        abline(v=CI[2],col='deepskyblue',lty=2,lwd=2)
+        legend('topright',lty=c(1,1,2),col=c('khaki','lightgreen','deepskyblue'),legend=c('Bootstrap Histogram','Bootstrap Density Curve','95% Bias corrected CI'),cex=0.75,lwd=c(10,2,2))
+    })
+    output$dist2Plot=renderPlot({
+        nsim=input$nsim
+        u=rep(0,nsim)
+        for(i in 1:nsim){
+          res.boot = res.data1[sample(x=1:nobs,size=nsim*nobs,replace=TRUE)]
+          res.boot = matrix(data=res.boot,nrow=nobs,ncol=nsim,byrow=FALSE)
+          Y.boot = matrix(data=pred,nrow=nobs,ncol=nsim,byrow=FALSE) + res.boot
+          beta.boot = solve( t(X)%*%X, t(X)%*%Y.boot)
+            u[i]=mean(beta.boot[3,])
+        }
+        hist(u,breaks=50,freq=F,col="blue",border=NA,xlab='Health Expenditure by GDP',main="Estimated coefficients using bootstrap")
+        lines(density(u),col='lightgreen',lwd=2)
+        obs=mod$coef[3]
+        boot=u
+        se=sd(boot)
+        bias=mean(boot)-obs
+        obs.corrected=obs-bias
+        CI=obs.corrected+c(-1,1)*qnorm(0.975)*se
+        abline(v=CI[1],col='deepskyblue',lty=2,lwd=2)
+        abline(v=CI[2],col='deepskyblue',lty=2,lwd=2)
+        legend('topright',lty=c(1,1,2),col=c('blue','lightgreen','deepskyblue'),legend=c('Bootstrap Histogram','Bootstrap Density Curve','95% Bias corrected CI'),cex=0.75,lwd=c(10,2,2))
+    })
+    output$dist3Plot=renderPlot({
+        nsim=input$nsim
+        u=rep(0,nsim)
+        for(i in 1:nsim){
+          res.boot = res.data1[sample(x=1:nobs,size=nsim*nobs,replace=TRUE)]
+          res.boot = matrix(data=res.boot,nrow=nobs,ncol=nsim,byrow=FALSE)
+          Y.boot = matrix(data=pred,nrow=nobs,ncol=nsim,byrow=FALSE) + res.boot
+          beta.boot = solve( t(X)%*%X, t(X)%*%Y.boot)
+            u[i]=mean(beta.boot[4,])
+        }
+        hist(u,breaks=50,freq=F,col="purple",border=NA,xlab='Government Health Expenditures',main="Estimated coefficients using bootstrap")
+        lines(density(u),col='lightgreen',lwd=2)
+        obs=mod$coef[4]
+        boot=u
+        se=sd(boot)
+        bias=mean(boot)-obs
+        obs.corrected=obs-bias
+        CI=obs.corrected+c(-1,1)*qnorm(0.975)*se
+        abline(v=CI[1],col='deepskyblue',lty=2,lwd=2)
+        abline(v=CI[2],col='deepskyblue',lty=2,lwd=2)
+        legend('topright',lty=c(1,1,2),col=c('purple','lightgreen','deepskyblue'),legend=c('Bootstrap Histogram','Bootstrap Density Curve','95% Bias corrected CI'),cex=0.75,lwd=c(10,2,2))
+    })
+}
+
+#shinyApp(ui=ui,server=server)
+```
+
+
+##### Data following normal distribution
+
+We simulate a random sample of size n=10 from a standard normal distribution: μ=0, σ^2=1
+
+
+```{r,fig.show='hide'}
+# We simulate a random sample of size n=10 from a standard normal distribution: μ=0, σ^2=1
+# simulation time=1000
+set.seed(26)
+nsim = 1000
+sigest = rep(0,nsim)
+
+for(i in 1:nsim){
+  X = rnorm(10,mean=0,sd=1)
+  sigest[i] = mean( (X-mean(X))^2 )
+}
+
+hist(sigest, 20, freq = F,col = "deepskyblue4",main = "Distribution of the biased sample estimator",xlab="Sample variance")
+points(1,0,pch=16,col="red")
+points(0.7430663,0,pch=16,col="chartreuse4")
+abline(v=mean(sigest),col="chartreuse4",lwd=3)
+abline(v=1,col="red",lwd=3)
+
+#arrows(1.6,0.6,t.obs,0.5, length = 0.07, code = , angle = 45, lty=1, lwd=2,col="red")
+text(x=1.7,y=0.6, labels = "population variance=1", adj = 0,offset = 2, cex = 0.7, col = "red", font = NULL)
+#arrows(2,0.3,1.7,0.1, length = 0.07, code = , angle = 45, lty=1, lwd=2,col="chartreuse4")
+text(x=2.1,y=0.3, labels = "estimated variance=0.7430663", adj = 0,offset = 2, cex = 0.7, col = "chartreuse4", font = NULL)
+#E(σ^2)
+mean(sigest)
+#The bias=E(σ^2)−σ^2
+bias = mean(sigest)-1
+bias
+#sd of simulated samples
+sighat.sd = sd(sigest)
+sighat.sd
+#Sampling distribution of the nobias estimator
+sighat.nobias = sigest-bias
+hist(sighat.nobias,col="deepskyblue4",freq = FALSE)
+# Confidence intervals based on normal theory
+mean(sighat.nobias) + c(-1,1)*qnorm(0.975)*sighat.sd
+# Percentile Bootstrap Confidence interval
+b0.025 = quantile(sigest,0.025)
+b0.975 = quantile(sigest,0.975)
+ c(b0.025,b0.975)
+# Basic bootsrap comfidence interval
+  2*mean(sighat.nobias) - c(b0.975, b0.025)
+```
+We simulate a random sample of size n=100 from a standard normal distribution: μ=0, σ^2=1
+```{r,fig.show='hide',message=FALSE,warning=FALSE,result='hide'}
+set.seed(26)
+nsim = 1000
+sigest = rep(0,nsim)
+
+for(i in 1:nsim){
+  X = rnorm(100,mean=0,sd=1)
+  sigest[i] = mean( (X-mean(X))^2 )
+}
+
+hist(sigest, 20, freq = F,col = "deepskyblue4",main = "Distribution of the biased sample estimator",xlab="Sample variance")
+points(1,0,pch=16,col="red")
+points(0.7430663,0,pch=16,col="chartreuse4")
+abline(v=mean(sigest),col="chartreuse4",lwd=3)
+abline(v=1,col="red",lwd=3)
+
+#arrows(1.6,0.6,t.obs,0.5, length = 0.07, code = , angle = 45, lty=1, lwd=2,col="red")
+text(x=1.7,y=0.6, labels = "population variance=1", adj = 0,offset = 2, cex = 0.7, col = "red", font = NULL)
+#arrows(2,0.3,1.7,0.1, length = 0.07, code = , angle = 45, lty=1, lwd=2,col="chartreuse4")
+text(x=2.1,y=0.3, labels = "estimated variance=0.7430663", adj = 0,offset = 2, cex = 0.7, col = "chartreuse4", font = NULL)
+mean(sigest)
+#The bias=E(σ^2)−σ^2
+bias = mean(sigest)-1
+bias
+#sd of simulated samples
+sighat.sd = sd(sigest)
+sighat.sd
+#Sampling distribution of the nobias estimator
+sighat.nobias = sigest-bias
+hist(sighat.nobias,col="deepskyblue4",freq = FALSE)
+# Confidence intervals based on normal theory
+mean(sighat.nobias) + c(-1,1)*qnorm(0.975)*sighat.sd
+# Percentile Bootstrap Confidence interval
+b0.025 = quantile(sigest,0.025)
+b0.975 = quantile(sigest,0.975)
+ c(b0.025,b0.975)
+# Basic bootsrap comfidence interval
+  2*mean(sighat.nobias) - c(b0.975, b0.025)
+```
+We simulate a random sample of size n=1000 from a standard normal distribution: μ=0, σ^2=1
+```{r,fig.show='hide',message=FALSE,warning=FALSE,result='hide'}
+# We simulate a random sample of size n=100 from a standard normal distribution: μ=0, σ^2=1
+# simulation time=1000
+set.seed(26)
+nsim = 1000
+sigest = rep(0,nsim)
+
+for(i in 1:nsim){
+  X = rnorm(1000,mean=0,sd=1)
+  sigest[i] = mean( (X-mean(X))^2 )
+}
+
+hist(sigest, 20, freq = F,col = "deepskyblue4",main = "Distribution of the biased sample estimator",xlab="Sample variance")
+points(1,0,pch=16,col="red")
+points(0.7430663,0,pch=16,col="chartreuse4")
+abline(v=mean(sigest),col="chartreuse4",lwd=3)
+abline(v=1,col="red",lwd=3)
+
+#arrows(1.6,0.6,t.obs,0.5, length = 0.07, code = , angle = 45, lty=1, lwd=2,col="red")
+text(x=1.7,y=0.6, labels = "population variance=1", adj = 0,offset = 2, cex = 0.7, col = "red", font = NULL)
+#arrows(2,0.3,1.7,0.1, length = 0.07, code = , angle = 45, lty=1, lwd=2,col="chartreuse4")
+text(x=2.1,y=0.3, labels = "estimated variance=0.7430663", adj = 0,offset = 2, cex = 0.7, col = "chartreuse4", font = NULL)
+#E(σ^2)
+mean(sigest)
+#The bias=E(σ^2)−σ^2
+bias = mean(sigest)-1
+bias
+#sd of simulated samples
+sighat.sd = sd(sigest)
+sighat.sd
+#Sampling distribution of the nobias estimator
+sighat.nobias = sigest-bias
+hist(sighat.nobias,col="deepskyblue4",freq = FALSE)
+# Confidence intervals based on normal theory
+mean(sighat.nobias) + c(-1,1)*qnorm(0.975)*sighat.sd
+# Percentile Bootstrap Confidence interval
+b0.025 = quantile(sigest,0.025)
+b0.975 = quantile(sigest,0.975)
+ c(b0.025,b0.975)
+# Basic bootsrap comfidence interval
+  2*mean(sighat.nobias) - c(b0.975, b0.025)
+```
+simulation times=20
+```{r,fig.show='hide',message=FALSE,warning=FALSE,result='hide'}
+# We simulate a random sample of size n=100 from a standard normal distribution: μ=0, σ^2=1
+# simulation times=10
+set.seed(26)
+nsim = 20
+sigest = rep(0,nsim)
+
+for(i in 1:nsim){
+  X = rnorm(100,mean=0,sd=1)
+  sigest[i] = mean( (X-mean(X))^2 )
+}
+
+hist(sigest, 20, freq = F,col = "deepskyblue4",main = "Distribution of the biased sample estimator",xlab="Sample variance")
+points(1,0,pch=16,col="red")
+points(0.7430663,0,pch=16,col="chartreuse4")
+abline(v=mean(sigest),col="chartreuse4",lwd=3)
+abline(v=1,col="red",lwd=3)
+
+#arrows(1.6,0.6,t.obs,0.5, length = 0.07, code = , angle = 45, lty=1, lwd=2,col="red")
+text(x=1.7,y=0.6, labels = "population variance=1", adj = 0,offset = 2, cex = 0.7, col = "red", font = NULL)
+#arrows(2,0.3,1.7,0.1, length = 0.07, code = , angle = 45, lty=1, lwd=2,col="chartreuse4")
+text(x=2.1,y=0.3, labels = "estimated variance=0.7430663", adj = 0,offset = 2, cex = 0.7, col = "chartreuse4", font = NULL)
+#E(σ^2)
+mean(sigest)
+#The bias=E(σ^2)−σ^2
+bias = mean(sigest)-1
+bias
+#sd of simulated samples
+sighat.sd = sd(sigest)
+sighat.sd
+#Sampling distribution of the nobias estimator
+sighat.nobias = sigest-bias
+hist(sighat.nobias,col="deepskyblue4",freq = FALSE)
+# Confidence intervals based on normal theory
+mean(sighat.nobias) + c(-1,1)*qnorm(0.975)*sighat.sd
+# Percentile Bootstrap Confidence interval
+b0.025 = quantile(sigest,0.025)
+b0.975 = quantile(sigest,0.975)
+ c(b0.025,b0.975)
+# Basic bootsrap comfidence interval
+  2*mean(sighat.nobias) - c(b0.975, b0.025)
+```
+simulation times=200
+```{r,fig.show='hide',message=FALSE,warning=FALSE,result='hide'}
+# We simulate a random sample of size n=100 from a standard normal distribution: μ=0, σ^2=1
+# simulation times=20
+set.seed(26)
+nsim = 200
+sigest = rep(0,nsim)
+
+for(i in 1:nsim){
+  X = rnorm(100,mean=0,sd=1)
+  sigest[i] = mean( (X-mean(X))^2 )
+}
+
+hist(sigest, 20, freq = F,col = "deepskyblue4",main = "Distribution of the biased sample estimator",xlab="Sample variance")
+points(1,0,pch=16,col="red")
+points(0.7430663,0,pch=16,col="chartreuse4")
+abline(v=mean(sigest),col="chartreuse4",lwd=3)
+abline(v=1,col="red",lwd=3)
+
+#arrows(1.6,0.6,t.obs,0.5, length = 0.07, code = , angle = 45, lty=1, lwd=2,col="red")
+text(x=1.7,y=0.6, labels = "population variance=1", adj = 0,offset = 2, cex = 0.7, col = "red", font = NULL)
+#arrows(2,0.3,1.7,0.1, length = 0.07, code = , angle = 45, lty=1, lwd=2,col="chartreuse4")
+text(x=2.1,y=0.3, labels = "estimated variance=0.7430663", adj = 0,offset = 2, cex = 0.7, col = "chartreuse4", font = NULL)
+#E(σ^2)
+mean(sigest)
+#The bias=E(σ^2)−σ^2
+bias = mean(sigest)-1
+bias
+#sd of simulated samples
+sighat.sd = sd(sigest)
+sighat.sd
+#Sampling distribution of the nobias estimator
+sighat.nobias = sigest-bias
+hist(sighat.nobias,col="deepskyblue4",freq = FALSE)
+# Confidence intervals based on normal theory
+mean(sighat.nobias) + c(-1,1)*qnorm(0.975)*sighat.sd
+# Percentile Bootstrap Confidence interval
+b0.025 = quantile(sigest,0.025)
+b0.975 = quantile(sigest,0.975)
+ c(b0.025,b0.975)
+# Basic bootsrap comfidence interval
+  2*mean(sighat.nobias) - c(b0.975, b0.025)
+```
+simulation times=1000
+```{r,fig.show='hide',message=FALSE,warning=FALSE,result='hide'}
+# We simulate a random sample of size n=100 from a standard normal distribution: μ=0, σ^2=1
+# simulation times=50
+set.seed(26)
+nsim = 1000
+sigest = rep(0,nsim)
+
+for(i in 1:nsim){
+  X = rnorm(100,mean=0,sd=1)
+  sigest[i] = mean( (X-mean(X))^2 )
+}
+
+hist(sigest, 20, freq = F,col = "deepskyblue4",main = "Distribution of the biased sample estimator",xlab="Sample variance")
+points(1,0,pch=16,col="red")
+points(0.7430663,0,pch=16,col="chartreuse4")
+abline(v=mean(sigest),col="chartreuse4",lwd=3)
+abline(v=1,col="red",lwd=3)
+
+#arrows(1.6,0.6,t.obs,0.5, length = 0.07, code = , angle = 45, lty=1, lwd=2,col="red")
+text(x=1.7,y=0.6, labels = "population variance=1", adj = 0,offset = 2, cex = 0.7, col = "red", font = NULL)
+#arrows(2,0.3,1.7,0.1, length = 0.07, code = , angle = 45, lty=1, lwd=2,col="chartreuse4")
+text(x=2.1,y=0.3, labels = "estimated variance=0.7430663", adj = 0,offset = 2, cex = 0.7, col = "chartreuse4", font = NULL)
+#E(σ^2)
+mean(sigest)
+#The bias=E(σ^2)−σ^2
+bias = mean(sigest)-1
+bias
+#sd of simulated samples
+sighat.sd = sd(sigest)
+sighat.sd
+#Sampling distribution of the nobias estimator
+sighat.nobias = sigest-bias
+hist(sighat.nobias,col="deepskyblue4",freq = FALSE)
+# Confidence intervals based on normal theory
+mean(sighat.nobias) + c(-1,1)*qnorm(0.975)*sighat.sd
+# Percentile Bootstrap Confidence interval
+b0.025 = quantile(sigest,0.025)
+b0.975 = quantile(sigest,0.975)
+ c(b0.025,b0.975)
+# Basic bootsrap comfidence interval
+  2*mean(sighat.nobias) - c(b0.975, b0.025)
+```
+
+

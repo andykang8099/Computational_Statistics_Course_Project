@@ -1,0 +1,81 @@
+---
+title: "Unknown distribution example"
+author: "Zixiang Xu"
+date: "2020/4/29"
+output:
+  html_document:
+    theme: united
+  word_document: default
+runtime: shiny
+---
+**This part tends to find out the relationship between simulation times and the corresponding bootstrap confidence interval.**  
+The data we use is the 'Old Faithful Geyser Data' which is stored in R already. The data,with 272 observations, tells the waiting time between eruptions for the Old Faithful geyser in Yellowstone National Park, Wyoming, USA.  
+The following is the example focusing on the mean and standard variance value of the bootstraped data.  
+We made a little application to visualize how the statistics(mean and standard variance) change when simulation time changes.  
+After trying different simulation times, we came to the conclusion that when simulation times are small, the confidence intervals are unstable -- they change dramaticly when simulation time grows. On the contray, the confidence intervals become stable when simulation times are large.  
+For example, when simulation times changes from 200 to 202, we have:
+<center class="half">
+    <img src="200.png"width="300"/><img src="201.png" width="300"/><img src="202.png" width="300"/>
+</center>
+When simulation times changes from 8000 to 8002, we have:
+<center class="half">
+    <img src="8000.png"width="300"/><img src="8001.png" width="300"/><img src="8002.png" width="300"/>
+</center>
+
+Hence, if we want to get a more precise result, we may better choose simulation times as much as possible.
+```{r}
+library(shiny)
+ui=fluidPage(
+    titlePanel("Bootstrap for faithful data"),
+    sidebarLayout(
+        sidebarPanel(
+            sliderInput("nsim",
+                        "Times of bootstraps:",
+                        min=10,
+                        max=10000,
+                        value=4000)
+        ),
+        mainPanel(
+           plotOutput("distPlot")
+        )
+    )
+)
+server=function(input, output) {
+    output$distPlot=renderPlot({
+        x=faithful[,2]
+        nsim=input$nsim
+        u=rep(0,nsim)
+        v=rep(0,nsim)
+        for(i in 1:nsim){
+            temp=sample(x,size=length(x),replace=TRUE)
+            u[i]=mean(temp)
+            v[i]=sd(temp)
+        }
+        par(mfrow=c(2,1))
+        hist(u,breaks=50,freq=F,col="khaki",border=NA,xlim=c(68,74),xlab='Waiting Time (min)',main=paste(sep='','Mean Value (Simulation Time = ',nsim,')'))
+        lines(density(u),col='lightgreen',lwd=2)
+        obs=mean(x)
+        boot=u
+        se=sd(boot)
+        bias=mean(boot)-obs
+        obs.corrected=obs-bias
+        CI=obs.corrected+c(-1,1)*qnorm(0.975)*se
+        abline(v=CI[1],col='deepskyblue',lty=2,lwd=2)
+        abline(v=CI[2],col='deepskyblue',lty=2,lwd=2)
+        legend('topright',lty=c(1,1,2),col=c('khaki','lightgreen','deepskyblue'),legend=c('Bootstrap Histogram','Bootstrap Density Curve','95% Bias corrected CI'),cex=0.75,lwd=c(10,2,2))
+        
+        hist(v,breaks=50,freq=F,col="khaki",border=NA,xlim=c(12,15),xlab='Waiting Time (min)',main=paste(sep='','SD Value (Simulation Time = ',nsim,')'))
+        lines(density(v),col='lightgreen',lwd=2)
+        obs=sd(x)
+        boot=v
+        se=sd(boot)
+        bias=mean(boot)-obs
+        obs.corrected=obs-bias
+        CI=obs.corrected+c(-1,1)*qnorm(0.975)*se
+        abline(v=CI[1],col='deepskyblue',lty=2,lwd=2)
+        abline(v=CI[2],col='deepskyblue',lty=2,lwd=2)
+        legend('topright',lty=c(1,1,2),col=c('khaki','lightgreen','deepskyblue'),legend=c('Bootstrap Histogram','Bootstrap Density Curve','95% Bias corrected CI'),cex=0.75,lwd=c(10,2,2))
+    },height = 800, width = 700 )
+}
+shinyApp(ui=ui,server=server)
+```
